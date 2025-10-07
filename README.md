@@ -2,6 +2,22 @@
 
 Este proyecto es una demostración interactiva de validación de formularios y manejo de errores HTTP en el desarrollo web frontend.
 
+## Evolución del Proyecto
+
+El proyecto ha pasado por dos versiones principales para mostrar la evolución y mejora del código:
+
+1. **Versión Original** (`Ejemplo HTTP.html`):
+   - Todo el código en un solo archivo
+   - Funcional pero menos mantenible
+   - Útil para referencia y comparación
+
+2. **Versión Estructurada** (`index.html`):
+   - Código separado en componentes
+   - Mejor organización de archivos
+   - Más fácil de mantener y escalar
+
+Ambas versiones se mantienen en el repositorio para demostrar el proceso de mejora y refactorización.
+
 ## Características
 
 - Validación de formularios en el lado del cliente
