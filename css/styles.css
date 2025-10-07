@@ -1,0 +1,131 @@
+:root {
+    --bg: #0f172a;
+    --card: #111827;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --ok: #16a34a;
+    --error: #ef4444;
+    --accent: #3b82f6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, Segoe UI, Roboto, Ubuntu, sans-serif;
+    color: var(--text);
+    background: #0b1220;
+}
+
+header, footer {
+    text-align: center;
+    padding: 1.2rem;
+}
+
+header h1 {
+    margin: .1rem 0;
+}
+
+header p, footer small {
+    color: var(--muted);
+}
+
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.card {
+    background: linear-gradient(180deg, #0f172a 0%, #0a0f1c 100%);
+    border: 1px solid #1f2937;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+
+h2 {
+    margin-top: 0;
+    color: #cbd5e1;
+}
+
+.grid {
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    margin-bottom: .75rem;
+}
+
+label {
+    display: grid;
+    gap: .35rem;
+    font-size: .95rem;
+}
+
+input, button {
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: #0b1220;
+    color: var(--text);
+    padding: .65rem .75rem;
+    outline: none;
+}
+
+input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .2);
+}
+
+button {
+    cursor: pointer;
+    font-weight: 600;
+    background: linear-gradient(180deg, #1e40af 0%, #1d4ed8 100%);
+    border-color: #1d4ed8;
+}
+
+.hint {
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.result {
+    margin-top: .75rem;
+    padding: .75rem .85rem;
+    border-radius: 10px;
+    border: 1px solid #1f2937;
+}
+
+.result.ok {
+    border-color: rgba(22, 163, 74, .4);
+    background: rgba(22, 163, 74, .08);
+}
+
+.result.error {
+    border-color: rgba(239, 68, 68, .4);
+    background: rgba(239, 68, 68, .08);
+}
+
+.code {
+    background: #0b1220;
+    border: 1px solid #1f2937;
+    border-radius: 10px;
+    padding: .75rem;
+    overflow: auto;
+    min-height: 64px;
+}
+
+.open-btn {
+    display: inline-block;
+    margin-top: .5rem;
+    padding: .6rem 1rem;
+    background: linear-gradient(180deg, #16a34a, #15803d);
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+}

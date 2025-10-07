@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Demo Validación y Errores HTTP – OnlineGDB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bg:#0f172a; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --ok:#16a34a; --error:#ef4444; --accent:#3b82f6; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui, Segoe UI, Roboto, Ubuntu, sans-serif;color:var(--text);background:#0b1220}
+    header,footer{text-align:center;padding:1.2rem}
+    header h1{margin:.1rem 0}
+    header p,footer small{color:var(--muted)}
+    main{max-width:900px;margin:0 auto;padding:1rem;display:grid;gap:1rem}
+    .card{background:linear-gradient(180deg,#0f172a 0%,#0a0f1c 100%);border:1px solid #1f2937;border-radius:16px;padding:1rem 1.25rem;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h2{margin-top:0;color:#cbd5e1}
+    .grid{display:grid;gap:.75rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-bottom:.75rem}
+    label{display:grid;gap:.35rem;font-size:.95rem}
+    input,button{border-radius:10px;border:1px solid #334155;background:#0b1220;color:var(--text);padding:.65rem .75rem;outline:none}
+    input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+    button{cursor:pointer;font-weight:600;background:linear-gradient(180deg,#1e40af 0%,#1d4ed8 100%);border-color:#1d4ed8}
+    .hint{color:var(--muted);font-size:.8rem}
+    .result{margin-top:.75rem;padding:.75rem .85rem;border-radius:10px;border:1px solid #1f2937}
+    .result.ok{border-color:rgba(22,163,74,.4);background:rgba(22,163,74,.08)}
+    .result.error{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08)}
+    .code{background:#0b1220;border:1px solid #1f2937;border-radius:10px;padding:.75rem;overflow:auto;min-height:64px}
+    .open-btn{display:inline-block;margin-top:.5rem;padding:.6rem 1rem;background:linear-gradient(180deg,#16a34a,#15803d);border:none;color:white;font-weight:bold;border-radius:10px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Validación de Datos & Manejo de Errores HTTP</h1>
+    <p>Simulación educativa — Programación Web (Cliente)</p>
+    <button class="open-btn" onclick="abrirDemo()">🔗 Abrir demo en nueva ventana</button>
+  </header>
+
+  <main id="mainContent">
+    <section class="card">
+      <h2>Registro de Usuario (Validación Cliente)</h2>
+      <form id="registerForm" novalidate>
+        <div class="grid">
+          <label>Nombre
+            <input type="text" name="name" id="name" required minlength="2" maxlength="80" placeholder="Tu nombre" />
+            <small class="hint">Mínimo 2 – Máximo 80 caracteres.</small>
+          </label>
+          <label>Email
+            <input type="email" name="email" id="email" required placeholder="tucorreo@dominio.com" />
+            <small class="hint">Debe tener formato válido.</small>
+          </label>
+        </div>
+        <div class="grid">
+          <label>Edad
+            <input type="number" name="age" id="age" required min="18" max="120" placeholder="Ej. 25" />
+            <small class="hint">Entre 18 y 120 años.</small>
+          </label>
+        </div>
+        <div class="grid">
+          <label>Contraseña
+            <input type="password" name="password" id="password" required minlength="8" placeholder="Mín. 8 caracteres" />
+          </label>
+          <label>Confirmar Contraseña
+            <input type="password" name="confirmPassword" id="confirmPassword" required minlength="8" />
+          </label>
+        </div>
+        <button type="submit">Registrar</button>
+      </form>
+      <div id="result" class="result" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <h2>Simulador de Códigos HTTP</h2>
+      <p>Haz clic para ver ejemplos de respuestas típicas:</p>
+      <div class="grid">
+        <button data-sim="200">200 OK</button>
+        <button data-sim="201">201 Created</button>
+        <button data-sim="400">400 Bad Request</button>
+        <button data-sim="409">409 Conflict</button>
+        <button data-sim="422">422 Unprocessable Entity</button>
+        <button data-sim="500">500 Internal Server Error</button>
+      </div>
+      <pre id="mockOut" class="code"></pre>
+    </section>
+  </main>
+
+  <footer><small>Desarrollado por Aether — Ejemplo académico OnlineGDB</small></footer>
+
+  <script>
+    /* Abre la misma demo en una nueva ventana (para pantalla completa en OnlineGDB) */
+    function abrirDemo() {
+      const html = document.documentElement.outerHTML;
+      const win = window.open("", "_blank");
+      win.document.write(html);
+      win.document.close();
+    }
+
+    const $ = (s) => document.querySelector(s);
+
+    function uiMessage(type, text, details) {
+      const el = $("#result");
+      el.className = "result " + type;
+      const list = details && details.length
+        ? "<ul>" + details.map(d => `<li><strong>${d.field || "campo"}:</strong> ${d.message}</li>`).join("") + "</ul>"
+        : "";
+      el.innerHTML = `<p>${text}</p>${list}`;
+    }
+
+    function getFormData(form) {
+      const data = new FormData(form);
+      return Object.fromEntries(data.entries());
+    }
+
+    /* VALIDACIÓN CLIENTE corregida:
+       - trim() para evitar espacios invisibles
+       - regex con flag 'u' para compatibilidad unicode
+       - NADA de '\\s' (ya no hay secuencias escapadas) */
+    function validateClient({ name, email, age, password, confirmPassword }) {
+      const errors = [];
+
+      const nameStr = String(name || "").trim();
+      if (nameStr.length < 2) errors.push({ field: "name", message: "Nombre demasiado corto." });
+
+      const emailStr = String(email || "").trim();
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u;   // ejemplo@dominio.tld
+      if (!emailRe.test(emailStr)) {
+        errors.push({ field: "email", message: "Email inválido." });
+      }
+
+      const n = Number(String(age || "").trim());
+      if (!Number.isInteger(n) || n < 18 || n > 120) {
+        errors.push({ field: "age", message: "Edad fuera de rango (18–120)." });
+      }
+
+      const pass = String(password || "");
+      const pass2 = String(confirmPassword || "");
+      if (pass.length < 8) errors.push({ field: "password", message: "Contraseña mínima 8 caracteres." });
+      if (pass !== pass2) errors.push({ field: "confirmPassword", message: "Las contraseñas no coinciden." });
+
+      return errors;
+    }
+
+    /* Simulación de backend para docencia */
+    async function mockRegister(payload) {
+      await new Promise(r => setTimeout(r, 300));
+      const errs = validateClient(payload);
+      if (errs.length) {
+        return { ok:false, status:400, body:{ status:400, message:"Datos inválidos.", errors:errs } };
+      }
+      // 409 si email exacto "ana@mail.com" (duplicado simulado)
+      if (String(payload.email).trim().toLowerCase() === "ana@mail.com") {
+        return { ok:false, status:409, body:{ status:409, message:"El email ya está registrado." } };
+      }
+      // 422 si la contraseña contiene el nombre
+      if (String(payload.password).toLowerCase().includes(String(payload.name).toLowerCase().trim())) {
+        return { ok:false, status:422, body:{ status:422, message:"La contraseña no debe contener tu nombre." } };
+      }
+      return { ok:true, status:201, body:{ status:201, message:"Usuario registrado correctamente." } };
+    }
+
+    $("#registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = getFormData(e.currentTarget);
+      const clientErrors = validateClient(payload);
+      if (clientErrors.length) {
+        uiMessage("error", "Errores en el formulario (cliente).", clientErrors);
+        return;
+      }
+      const res = await mockRegister(payload);
+      if (!res.ok) {
+        uiMessage("error", `(${res.status}) ${res.body.message}`);
+      } else {
+        uiMessage("ok", `(${res.status}) ${res.body.message}`);
+        e.currentTarget.reset();
+      }
+    });
+
+    const mockBodies = {
+      200: { status:200, message:"OK" },
+      201: { status:201, message:"Created" },
+      400: { status:400, message:"Bad Request" },
+      409: { status:409, message:"Conflict" },
+      422: { status:422, message:"Unprocessable Entity" },
+      500: { status:500, message:"Internal Server Error" }
+    };
+    document.querySelectorAll("[data-sim]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const code = btn.getAttribute("data-sim");
+        $("#mockOut").textContent = JSON.stringify(mockBodies[code], null, 2);
+      });
+    });
+  </script>
+</body>
+</html>

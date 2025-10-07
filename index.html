@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Demo Validación y Errores HTTP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Validación de Datos & Manejo de Errores HTTP</h1>
+        <p>Simulación educativa — Programación Web (Cliente)</p>
+        <button class="open-btn" onclick="abrirDemo()">🔗 Abrir demo en nueva ventana</button>
+    </header>
+
+    <main id="mainContent">
+        <section class="card">
+            <h2>Registro de Usuario (Validación Cliente)</h2>
+            <form id="registerForm" novalidate>
+                <div class="grid">
+                    <label>Nombre
+                        <input type="text" name="name" id="name" required minlength="2" maxlength="80"
+                            placeholder="Tu nombre" />
+                        <small class="hint">Mínimo 2 – Máximo 80 caracteres.</small>
+                    </label>
+                    <label>Email
+                        <input type="email" name="email" id="email" required placeholder="tucorreo@dominio.com" />
+                        <small class="hint">Debe tener formato válido.</small>
+                    </label>
+                </div>
+                <div class="grid">
+                    <label>Edad
+                        <input type="number" name="age" id="age" required min="18" max="120" placeholder="Ej. 25" />
+                        <small class="hint">Entre 18 y 120 años.</small>
+                    </label>
+                </div>
+                <div class="grid">
+                    <label>Contraseña
+                        <input type="password" name="password" id="password" required minlength="8"
+                            placeholder="Mín. 8 caracteres" />
+                    </label>
+                    <label>Confirmar Contraseña
+                        <input type="password" name="confirmPassword" id="confirmPassword" required minlength="8" />
+                    </label>
+                </div>
+                <button type="submit">Registrar</button>
+            </form>
+            <div id="result" class="result" aria-live="polite"></div>
+        </section>
+
+        <section class="card">
+            <h2>Simulador de Códigos HTTP</h2>
+            <p>Haz clic para ver ejemplos de respuestas típicas:</p>
+            <div class="grid">
+                <button data-sim="200">200 OK</button>
+                <button data-sim="201">201 Created</button>
+                <button data-sim="400">400 Bad Request</button>
+                <button data-sim="409">409 Conflict</button>
+                <button data-sim="422">422 Unprocessable Entity</button>
+                <button data-sim="500">500 Internal Server Error</button>
+            </div>
+            <pre id="mockOut" class="code"></pre>
+        </section>
+    </main>
+
+    <footer>
+        <small>Desarrollado por Aether — Ejemplo académico OnlineGDB</small>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
